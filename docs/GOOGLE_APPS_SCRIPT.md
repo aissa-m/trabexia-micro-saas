@@ -89,15 +89,29 @@ function getSheet() {
 }
 
 function appendRow(data) {
-  var sheet = getSheet();
+  // Validar campos obligatorios (paisUE solo si nacionalidad europea = Sí)
+  var nacionalidad = (data.nacionalidadEuropea || '').toString().trim();
+  var paisUE = (data.paisUE || '').toString().trim();
 
+  if (!(data.nombre || '').toString().trim()) throw new Error('Campo obligatorio faltante: nombre');
+  if (!(data.ciudad || '').toString().trim()) throw new Error('Campo obligatorio faltante: ciudad');
+  if (nacionalidad !== 'Sí' && nacionalidad !== 'No') throw new Error('Campo obligatorio faltante: nacionalidadEuropea');
+  if (nacionalidad === 'Sí' && !paisUE) throw new Error('Campo obligatorio faltante: paisUE');
+  if (!(data.prefijoTelefono || '').toString().trim()) throw new Error('Campo obligatorio faltante: prefijoTelefono');
+  if (!(data.telefono || '').toString().trim()) throw new Error('Campo obligatorio faltante: telefono');
+  if (!(data.edad || '').toString().trim()) throw new Error('Campo obligatorio faltante: edad');
+  if (!(data.carnetB || '').toString().trim()) throw new Error('Campo obligatorio faltante: carnetB');
+  if (!(data.nivelIngles || '').toString().trim()) throw new Error('Campo obligatorio faltante: nivelIngles');
+  if (!(data.experienciaBreve || '').toString().trim()) throw new Error('Campo obligatorio faltante: experienciaBreve');
+
+  var sheet = getSheet();
   sheet.appendRow([
     Utilities.getUuid(),
     new Date(),
     data.nombre || '',
     data.ciudad || '',
-    data.nacionalidadEuropea || '',
-    data.paisUE || '',
+    nacionalidad,
+    nacionalidad === 'Sí' ? paisUE : '',
     data.prefijoTelefono || '',
     data.telefono || '',
     data.edad || '',

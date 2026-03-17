@@ -18,15 +18,21 @@ export function Header() {
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-brand rounded-lg">
+        <Link
+          href="/"
+          className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-brand rounded-lg"
+        >
           <Image
-            src="/img/logo_nombre_sin_fondo.png"
+            src="/img/logo.png"
             alt="Trabexia"
-            width={190}
-            height={40}
-            className="h-9 w-auto"
+            width={56}
+            height={56}
+            className="h-12 w-auto"
             priority
           />
+          <span className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">
+            Trabexia
+          </span>
         </Link>
         <nav className="flex items-center gap-1 sm:gap-4">
           <Link
@@ -35,6 +41,12 @@ export function Header() {
           >
             {Icons.home}
             Inicio
+          </Link>
+          <Link
+            href="/empleos"
+            className="hidden sm:inline-flex items-center gap-2 text-gray-600 hover:text-brand font-medium transition px-3 py-2 rounded-lg hover:bg-brand-light"
+          >
+            Empleos
           </Link>
           <Link
             href="/formulario"

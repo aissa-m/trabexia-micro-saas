@@ -97,14 +97,20 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <Link href="/" className="block focus:outline-none focus:ring-2 focus:ring-trabexia-primary rounded-lg">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-trabexia-primary rounded-lg px-3 py-2"
+          >
             <Image
-              src="/img/logo_nombre_sin_fondo.png"
+              src="/img/logo.png"
               alt="Trabexia"
-              width={160}
-              height={48}
-              className="h-10 w-auto"
+              width={56}
+              height={56}
+              className="h-12 w-auto"
             />
+            <span className="text-3xl font-semibold tracking-tight text-gray-900">
+              Trabexia
+            </span>
           </Link>
         </div>
 

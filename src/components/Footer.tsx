@@ -15,23 +15,24 @@ const Icons = {
 
 export function Footer() {
   return (
-    <footer className="bg-brand text-white mt-auto">
+    <footer className="bg-slate-950 border-t border-slate-800 mt-auto">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/90">
-            © {new Date().getFullYear()} Trabexia. Candidaturas para conductores.
+          <p className="text-sm text-slate-300 text-center sm:text-left">
+            © {new Date().getFullYear()} Trabexia. Oportunidades en logística, transporte, mecánica y
+            otras áreas técnicas.
           </p>
           <div className="flex gap-6">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white transition"
+              className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition"
             >
               {Icons.home}
               Inicio
             </Link>
             <Link
               href="/formulario"
-              className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white transition"
+              className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition"
             >
               {Icons.form}
               Candidatura
