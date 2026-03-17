@@ -1,5 +1,9 @@
+'use client';
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Menu, X } from "lucide-react";
 
 const Icons = {
   home: (
@@ -15,48 +19,104 @@ const Icons = {
 };
 
 export function Header() {
+  const [open, setOpen] = useState(false);
+
+  const toggleMenu = () => setOpen((prev) => !prev);
+  const closeMenu = () => setOpen(false);
+
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <Link
           href="/"
-          className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-brand rounded-lg"
+          className="flex items-center gap-2 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-brand rounded-lg"
+          onClick={closeMenu}
         >
           <Image
             src="/img/logo.png"
             alt="Trabexia"
             width={56}
             height={56}
-            className="h-12 w-auto"
+            className="h-9 w-auto sm:h-10 md:h-11"
             priority
           />
-          <span className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">
+          <span className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
             Trabexia
           </span>
         </Link>
-        <nav className="flex items-center gap-1 sm:gap-4">
+
+        {/* Navegación desktop */}
+        <nav className="hidden md:flex items-center gap-3">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-gray-600 hover:text-brand font-medium transition px-3 py-2 rounded-lg hover:bg-brand-light"
+            onClick={closeMenu}
           >
             {Icons.home}
             Inicio
           </Link>
           <Link
             href="/empleos"
-            className="hidden sm:inline-flex items-center gap-2 text-gray-600 hover:text-brand font-medium transition px-3 py-2 rounded-lg hover:bg-brand-light"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-brand font-medium transition px-3 py-2 rounded-lg hover:bg-brand-light"
+            onClick={closeMenu}
           >
             Empleos
           </Link>
           <Link
             href="/formulario"
             className="inline-flex items-center gap-2 btn-primary text-sm"
+            onClick={closeMenu}
           >
             {Icons.form}
             Candidatura
           </Link>
         </nav>
+
+        {/* Botón menú móvil */}
+        <button
+          type="button"
+          onClick={toggleMenu}
+          className="inline-flex items-center justify-center rounded-lg p-2 text-gray-600 hover:text-brand hover:bg-brand-light md:hidden focus:outline-none focus:ring-2 focus:ring-brand"
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
+
+      {/* Panel móvil */}
+      {open && (
+        <div className="md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-sm shadow-sm">
+          <nav className="max-w-6xl mx-auto px-4 py-3 space-y-1">
+            <Link
+              href="/"
+              className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              onClick={closeMenu}
+            >
+              <span className="flex items-center gap-2">
+                {Icons.home}
+                Inicio
+              </span>
+            </Link>
+            <Link
+              href="/empleos"
+              className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              onClick={closeMenu}
+            >
+              <span>Empleos</span>
+            </Link>
+            <Link
+              href="/formulario"
+              className="flex items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold text-white bg-brand hover:bg-brand-dark"
+              onClick={closeMenu}
+            >
+              <span className="flex items-center gap-2">
+                {Icons.form}
+                Candidatura
+              </span>
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
