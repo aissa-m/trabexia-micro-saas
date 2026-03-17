@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --trabexia-primary: #1e3a5f;
+  --trabexia-secondary: #2d5a87;
+  --trabexia-accent: #f59e0b;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm;
+  }
+  .btn-accent {
+    @apply bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm;
+  }
+  .input-field {
+    @apply w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition bg-white;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden;
+  }
+}
