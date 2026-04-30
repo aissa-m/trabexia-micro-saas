@@ -148,27 +148,32 @@ export default function AdminPanelPage() {
   const filteredCandidates = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return candidates.filter((candidate) => {
-      const matchesEstado = !filterEstado || candidate.estado === filterEstado;
+    return candidates
+      .filter((candidate) => {
+        const matchesEstado = !filterEstado || candidate.estado === filterEstado;
 
-      const matchesArchivado =
-        filterArchivado === "all" ||
-        (filterArchivado === "true" ? candidate.archivado : !candidate.archivado);
+        const matchesArchivado =
+          filterArchivado === "all" ||
+          (filterArchivado === "true" ? candidate.archivado : !candidate.archivado);
 
-      const fullPhone = [candidate.prefijoTelefono, candidate.telefono]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+        const fullPhone = [candidate.prefijoTelefono, candidate.telefono]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
-      const matchesSearch =
-        !normalizedSearch ||
-        candidate.nombre.toLowerCase().includes(normalizedSearch) ||
-        candidate.ciudad.toLowerCase().includes(normalizedSearch) ||
-        fullPhone.includes(normalizedSearch) ||
-        candidate.telefono.toLowerCase().includes(normalizedSearch);
+        const matchesSearch =
+          !normalizedSearch ||
+          candidate.nombre.toLowerCase().includes(normalizedSearch) ||
+          candidate.ciudad.toLowerCase().includes(normalizedSearch) ||
+          fullPhone.includes(normalizedSearch) ||
+          candidate.telefono.toLowerCase().includes(normalizedSearch);
 
-      return matchesEstado && matchesArchivado && matchesSearch;
-    });
+        return matchesEstado && matchesArchivado && matchesSearch;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
   }, [candidates, filterEstado, filterArchivado, search]);
 
   const total = filteredCandidates.length;

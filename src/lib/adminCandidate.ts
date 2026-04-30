@@ -28,5 +28,7 @@ export function buildWhatsAppUrl(prefijo: string, telefono: string): string | nu
   const raw = `${prefijo ?? ""}${telefono ?? ""}`;
   const digits = raw.replace(/[^\d]/g, "");
   if (!digits) return null;
-  return `https://wa.me/${digits}`;
+  const message =
+    "Hola, Te escribimos desde Trabexia porque has sido preseleccionado/a para un puesto en Amazon en Alemania tras revisar tu candidatura. Queríamos saber si sigues interesado/a en continuar con el proceso. En caso afirmativo, te facilitaremos los siguientes pasos lo antes posible. Quedamos a la espera de tu respuesta. Un saludo";
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
