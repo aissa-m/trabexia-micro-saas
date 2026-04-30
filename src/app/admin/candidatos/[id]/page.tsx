@@ -4,28 +4,11 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Candidate, CandidateStatus } from "@/types/candidate";
-import { PAISES_UE } from "@/lib/constants";
+import { formatDate, paisLabel, buildWhatsAppUrl } from "@/lib/adminCandidate";
+import { CandidateStatusBadge } from "@/components/admin/CandidateStatusBadge";
+import { WhatsAppContactButton } from "@/components/admin/WhatsAppContactButton";
 
 const ESTADOS: CandidateStatus[] = ["APTO", "DESCARTADO", "DUDA"];
-
-function formatDate(iso: string) {
-  if (!iso) return "—";
-  try {
-    return new Date(iso).toLocaleString("es-ES", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
-
-function paisLabel(code: string) {
-  return PAISES_UE.find((p) => p.value === code)?.label ?? code;
-}
 
 /** Muestra "—" cuando el valor está vacío; evita reutilizar otros campos. */
 function displayValue(
@@ -141,6 +124,21 @@ function InfoRow({
         <p className="mt-0.5 font-medium text-gray-900">{value}</p>
       </div>
     </div>
+  );
+}
+
+function DetailCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">{title}</h2>
+      {children}
+    </section>
   );
 }
 
@@ -293,16 +291,12 @@ export default function AdminCandidateDetailPage() {
     localContactado !== candidate.contactado ||
     localArchivado !== candidate.archivado;
 
-  const statusStyles = {
-    APTO: "bg-emerald-50 text-emerald-800 border-emerald-200",
-    DESCARTADO: "bg-red-50 text-red-800 border-red-200",
-    DUDA: "bg-amber-50 text-amber-800 border-amber-200",
-  };
+  const whatsappUrl = buildWhatsAppUrl(candidate.prefijoTelefono, candidate.telefono);
+  const phone = [candidate.prefijoTelefono, candidate.telefono].filter(Boolean).join(" ") || "—";
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center gap-4">
         <Link
           href="/admin"
           className="inline-flex items-center gap-2 text-gray-600 hover:text-trabexia-primary font-medium transition"
@@ -312,102 +306,118 @@ export default function AdminCandidateDetailPage() {
         </Link>
       </div>
 
-      {/* Card principal */}
-      <div className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-        {/* Cabecera con nombre y estado */}
-        <div className="bg-gradient-to-r from-trabexia-primary/5 to-transparent px-6 py-6 sm:px-8 sm:py-8 border-b border-gray-100">
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-trabexia-primary/10 text-trabexia-primary font-bold text-xl">
-              {candidate.nombre.charAt(0).toUpperCase()}
+      <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-trabexia-primary/10 text-trabexia-primary font-bold text-lg sm:h-14 sm:w-14 sm:text-xl">
+              {candidate.nombre?.charAt(0).toUpperCase() || "?"}
             </div>
-            <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl font-bold text-gray-900 sm:text-2xl break-words">
                 {candidate.nombre}
               </h1>
-              <p className="mt-0.5 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500">
                 Candidato · ID {id.slice(0, 8)}…
               </p>
+              <CandidateStatusBadge
+                estado={candidate.estado}
+                className="mt-2 px-3 py-1.5 text-sm border border-current/20"
+              />
             </div>
-            <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border ${statusStyles[candidate.estado] ?? statusStyles.DUDA}`}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            <WhatsAppContactButton
+              href={whatsappUrl}
+              className="sm:col-span-2 lg:col-span-2 rounded-xl px-4 py-3"
+              unavailableClassName="sm:col-span-2 lg:col-span-2 rounded-xl px-4 py-3"
+            />
+            {hasChanges && (
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white bg-trabexia-primary border border-trabexia-primary hover:opacity-90 transition disabled:opacity-60"
+              >
+                {Icons.save}
+                {saving ? "Guardando..." : "Guardar cambios"}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition disabled:opacity-60"
             >
-              <span className="w-2 h-2 rounded-full bg-current opacity-75" />
-              {candidate.estado}
-            </span>
+              {Icons.trash}
+              {deleting ? "Borrando..." : "Borrar"}
+            </button>
           </div>
         </div>
+      </section>
 
-        <div className="grid sm:grid-cols-2 gap-0">
-          {/* Columna izquierda: datos personales y permisos */}
-          <div className="p-6 sm:p-8 border-b sm:border-b-0 sm:border-r border-gray-100">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">
-              {Icons.user}
-              Datos personales
-            </h2>
-            <div className="space-y-0">
-              <InfoRow icon={Icons.map} label="Ciudad" value={displayValue(candidate.ciudad)} />
-              <InfoRow icon={Icons.globe} label="Nacionalidad europea" value={displayValue(candidate.nacionalidadEuropea)} />
-              <InfoRow icon={Icons.flag} label="País UE" value={displayValue(paisLabel(candidate.paisUE))} />
-              <InfoRow icon={Icons.phone} label="Prefijo telefónico" value={displayValue(candidate.prefijoTelefono)} />
-              <InfoRow icon={Icons.phone} label="Teléfono" value={displayValue(candidate.telefono)} />
-              <InfoRow icon={Icons.calendar} label="Edad" value={displayValue(candidate.edad, { emptyNumberAsDash: true })} />
-            </div>
-
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-500 mt-8 mb-4">
-              {Icons.car}
-              Permisos y formación
-            </h2>
-            <div className="space-y-0">
-              <InfoRow icon={Icons.car} label="Carnet B" value={displayValue(candidate.carnetB)} />
-              <InfoRow icon={Icons.language} label="Nivel de inglés" value={displayValue(candidate.nivelIngles)} />
-            </div>
-          </div>
-
-          {/* Columna derecha: experiencia y fechas */}
-          <div className="p-6 sm:p-8 border-b border-gray-100">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">
-              {Icons.briefcase}
-              Experiencia
-            </h2>
-            <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
-              <p className="text-gray-900 whitespace-pre-wrap text-sm leading-relaxed">
-                {displayValue(candidate.experienciaBreve) as string}
-              </p>
-            </div>
-
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-500 mt-8 mb-4">
-              {Icons.clock}
-              Registro
-            </h2>
-            <div className="space-y-0">
-              <InfoRow icon={Icons.clock} label="Fecha de registro" value={formatDate(candidate.createdAt)} />
-              {candidate.updatedAt && (
-                <InfoRow icon={Icons.clock} label="Última actualización" value={formatDate(candidate.updatedAt)} />
-              )}
-            </div>
-          </div>
+      {error && (
+        <div className="rounded-xl bg-red-50 text-red-800 px-4 py-3 border border-red-100 text-sm">
+          {error}
         </div>
+      )}
 
-        {/* Sección Editar estado */}
-        <div className="bg-gray-50/80 border-t border-gray-100 p-6 sm:p-8">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-gray-700 mb-4">
-            {Icons.pencil}
-            Editar estado
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5">
+        <DetailCard title="Datos personales">
+          <div className="space-y-0">
+            <InfoRow icon={Icons.map} label="Ciudad" value={displayValue(candidate.ciudad)} />
+            <InfoRow icon={Icons.calendar} label="Edad" value={displayValue(candidate.edad, { emptyNumberAsDash: true })} />
+            <InfoRow icon={Icons.phone} label="Teléfono" value={phone} />
+            <InfoRow icon={Icons.phone} label="Prefijo telefónico" value={displayValue(candidate.prefijoTelefono)} />
+          </div>
+        </DetailCard>
+
+        <DetailCard title="Requisitos">
+          <div className="space-y-0">
+            <InfoRow icon={Icons.globe} label="Nacionalidad europea" value={displayValue(candidate.nacionalidadEuropea)} />
+            <InfoRow icon={Icons.flag} label="País UE" value={displayValue(paisLabel(candidate.paisUE))} />
+            <InfoRow icon={Icons.car} label="Carnet B" value={displayValue(candidate.carnetB)} />
+            <InfoRow icon={Icons.language} label="Nivel de inglés" value={displayValue(candidate.nivelIngles)} />
+          </div>
+        </DetailCard>
+
+        <DetailCard title="Experiencia">
+          <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
+            <p className="text-gray-900 whitespace-pre-wrap text-sm leading-relaxed">
+              {displayValue(candidate.experienciaBreve) as string}
+            </p>
+          </div>
+        </DetailCard>
+
+        <DetailCard title="Registro">
+          <div className="space-y-0">
+            <InfoRow
+              icon={Icons.clock}
+              label="Fecha de registro"
+              value={formatDate(candidate.createdAt, true)}
+            />
+            {candidate.updatedAt && (
+              <InfoRow
+                icon={Icons.clock}
+                label="Última actualización"
+                value={formatDate(candidate.updatedAt, true)}
+              />
+            )}
+          </div>
+        </DetailCard>
+
+        <section className="xl:col-span-2 rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">
+            Gestión interna
           </h2>
-          {error && (
-            <div className="rounded-xl bg-red-50 text-red-800 px-4 py-3 text-sm border border-red-100 mb-4">
-              {error}
-            </div>
-          )}
-          <div className="flex flex-wrap items-end gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium uppercase tracking-wide text-gray-500 mb-1.5">
-                Estado
+                Estado del candidato
               </label>
               <select
                 value={localEstado}
                 onChange={(e) => setLocalEstado(e.target.value as CandidateStatus)}
-                className="input-field w-auto min-w-[160px]"
+                className="input-field w-full"
               >
                 {ESTADOS.map((e) => (
                   <option key={e} value={e}>
@@ -416,56 +426,47 @@ export default function AdminCandidateDetailPage() {
                 ))}
               </select>
             </div>
-            <label className="inline-flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={localContactado}
-                onChange={(e) => setLocalContactado(e.target.checked)}
-                className="rounded border-gray-300 text-trabexia-primary focus:ring-trabexia-primary"
-              />
-              <span className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                {Icons.phone}
-                Contactado
-              </span>
-            </label>
-            <label className="inline-flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={localArchivado}
-                onChange={(e) => setLocalArchivado(e.target.checked)}
-                className="rounded border-gray-300 text-trabexia-primary focus:ring-trabexia-primary"
-              />
-              <span className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                {Icons.archive}
-                Archivado
-              </span>
-            </label>
-            {hasChanges && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={localContactado}
+                  onChange={(e) => setLocalContactado(e.target.checked)}
+                  className="rounded border-gray-300 text-trabexia-primary focus:ring-trabexia-primary"
+                />
+                <span className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  {Icons.phone}
+                  Contactado
+                </span>
+              </label>
+              <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={localArchivado}
+                  onChange={(e) => setLocalArchivado(e.target.checked)}
+                  className="rounded border-gray-300 text-trabexia-primary focus:ring-trabexia-primary"
+                />
+                <span className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  {Icons.archive}
+                  Archivado
+                </span>
+              </label>
+            </div>
+          </div>
+          {hasChanges && (
+            <div className="mt-4 flex justify-start">
               <button
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="inline-flex items-center gap-2 btn-primary disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white bg-trabexia-primary border border-trabexia-primary hover:opacity-90 transition disabled:opacity-60"
               >
                 {Icons.save}
                 {saving ? "Guardando..." : "Guardar cambios"}
               </button>
-            )}
-          </div>
-        </div>
-
-        {/* Borrar */}
-        <div className="px-6 sm:px-8 py-4 border-t border-gray-200 bg-white">
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={deleting}
-            className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50 transition"
-          >
-            {Icons.trash}
-            {deleting ? "Borrando..." : "Borrar candidato"}
-          </button>
-        </div>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useMemo } from "react";
 import type { Candidate, CandidateStatus } from "@/types/candidate";
-import { PAISES_UE } from "@/lib/constants";
+import { CandidateCard } from "@/components/admin/CandidateCard";
 
 const ESTADOS: { value: CandidateStatus | ""; label: string }[] = [
   { value: "", label: "Todos" },
@@ -11,23 +10,6 @@ const ESTADOS: { value: CandidateStatus | ""; label: string }[] = [
   { value: "DESCARTADO", label: "Descartado" },
   { value: "DUDA", label: "Duda" },
 ];
-
-function formatDate(iso: string) {
-  if (!iso) return "—";
-  try {
-    return new Date(iso).toLocaleDateString("es-ES", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  } catch {
-    return iso;
-  }
-}
-
-function paisLabel(code: string) {
-  return PAISES_UE.find((p) => p.value === code)?.label ?? code;
-}
 
 const Icons = {
   users: (
@@ -85,17 +67,6 @@ const Icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   ),
-  eye: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-    </svg>
-  ),
-  trash: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-    </svg>
-  ),
   clipboard: (
     <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -144,19 +115,16 @@ export default function AdminPanelPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filterEstado, setFilterEstado] = useState<CandidateStatus | "">("");
-  const [filterArchivado, setFilterArchivado] = useState<string>("false");
+  const [filterArchivado, setFilterArchivado] = useState<"all" | "true" | "false">("false");
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const fetchCandidates = async () => {
     setLoading(true);
     setError("");
     try {
-      const params = new URLSearchParams();
-      if (filterEstado) params.set("estado", filterEstado);
-      if (filterArchivado !== "") params.set("archivado", filterArchivado);
-      if (search.trim()) params.set("search", search.trim());
-      const res = await fetch(`/api/admin/candidates?${params}`);
+      const res = await fetch("/api/admin/candidates");
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         setError(data.error ?? "Error al cargar");
@@ -175,13 +143,39 @@ export default function AdminPanelPage() {
 
   useEffect(() => {
     fetchCandidates();
-  }, [filterEstado, filterArchivado, search]);
+  }, []);
 
-  const total = candidates.length;
-  const aptos = candidates.filter((c) => c.estado === "APTO").length;
-  const descartados = candidates.filter((c) => c.estado === "DESCARTADO").length;
-  const duda = candidates.filter((c) => c.estado === "DUDA").length;
-  const contactados = candidates.filter((c) => c.contactado).length;
+  const filteredCandidates = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return candidates.filter((candidate) => {
+      const matchesEstado = !filterEstado || candidate.estado === filterEstado;
+
+      const matchesArchivado =
+        filterArchivado === "all" ||
+        (filterArchivado === "true" ? candidate.archivado : !candidate.archivado);
+
+      const fullPhone = [candidate.prefijoTelefono, candidate.telefono]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      const matchesSearch =
+        !normalizedSearch ||
+        candidate.nombre.toLowerCase().includes(normalizedSearch) ||
+        candidate.ciudad.toLowerCase().includes(normalizedSearch) ||
+        fullPhone.includes(normalizedSearch) ||
+        candidate.telefono.toLowerCase().includes(normalizedSearch);
+
+      return matchesEstado && matchesArchivado && matchesSearch;
+    });
+  }, [candidates, filterEstado, filterArchivado, search]);
+
+  const total = filteredCandidates.length;
+  const aptos = filteredCandidates.filter((c) => c.estado === "APTO").length;
+  const descartados = filteredCandidates.filter((c) => c.estado === "DESCARTADO").length;
+  const duda = filteredCandidates.filter((c) => c.estado === "DUDA").length;
+  const contactados = filteredCandidates.filter((c) => c.contactado).length;
 
   const handleDelete = async (c: Candidate) => {
     if (!confirm(`¿Borrar a ${c.nombre}? Esta acción no se puede deshacer.`)) return;
@@ -210,17 +204,51 @@ export default function AdminPanelPage() {
     }
   };
 
-  const statusBadge = (estado: CandidateStatus) => {
-    const styles = {
-      APTO: "bg-emerald-100 text-emerald-800",
-      DESCARTADO: "bg-red-100 text-red-800",
-      DUDA: "bg-amber-100 text-amber-800",
-    };
-    return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${styles[estado] ?? styles.DUDA}`}>
-        {estado}
-      </span>
-    );
+  const handleQuickUpdate = async (
+    candidate: Candidate,
+    updates: { contactado?: boolean; archivado?: boolean }
+  ) => {
+    setUpdatingId(candidate.id);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/candidates/${candidate.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const serverMsg =
+          data.error ??
+          (res.status === 404 ? "Candidato no encontrado." : "Error del servidor.");
+        setError(
+          `No se pudo actualizar a ${candidate.nombre}. ${serverMsg} (código ${res.status}).`
+        );
+        return;
+      }
+
+      setCandidates((prev) =>
+        prev.map((item) =>
+          item.id === candidate.id
+            ? {
+                ...item,
+                contactado:
+                  updates.contactado !== undefined
+                    ? updates.contactado
+                    : item.contactado,
+                archivado:
+                  updates.archivado !== undefined
+                    ? updates.archivado
+                    : item.archivado,
+              }
+            : item
+        )
+      );
+    } catch {
+      setError("Error de conexión al actualizar estado rápido.");
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   return (
@@ -259,7 +287,7 @@ export default function AdminPanelPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Nombre o ciudad..."
+              placeholder="Nombre, ciudad o teléfono..."
               className="input-field"
             />
           </div>
@@ -287,9 +315,12 @@ export default function AdminPanelPage() {
             </label>
             <select
               value={filterArchivado}
-              onChange={(e) => setFilterArchivado(e.target.value)}
+              onChange={(e) =>
+                setFilterArchivado(e.target.value as "all" | "true" | "false")
+              }
               className="input-field w-auto min-w-[120px]"
             >
+              <option value="all">Todos</option>
               <option value="false">No</option>
               <option value="true">Sí</option>
             </select>
@@ -307,93 +338,38 @@ export default function AdminPanelPage() {
         </div>
       )}
 
-      {/* Tabla */}
+      {/* Cards de candidatos */}
       <div className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="w-10 h-10 border-2 border-trabexia-primary border-t rounded-full animate-spin" />
             <p className="mt-4 text-gray-500">Cargando candidatos...</p>
           </div>
-        ) : candidates.length === 0 ? (
+        ) : filteredCandidates.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4">
             {Icons.clipboard}
             <p className="mt-4 font-medium text-gray-700">No hay candidatos</p>
             <p className="text-sm text-gray-500 mt-1">Con los filtros actuales no se encontraron resultados.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left py-3.5 px-4 font-semibold text-gray-600">
-                    <span className="inline-flex items-center gap-1.5">{Icons.user} Nombre</span>
-                  </th>
-                  <th className="text-left py-3.5 px-4 font-semibold text-gray-600">
-                    <span className="inline-flex items-center gap-1.5">{Icons.map} Ciudad</span>
-                  </th>
-                  <th className="text-left py-3.5 px-4 font-semibold text-gray-600">
-                    <span className="inline-flex items-center gap-1.5">{Icons.phone} Teléfono</span>
-                  </th>
-                  <th className="text-left py-3.5 px-4 font-semibold text-gray-600">País UE</th>
-                  <th className="text-left py-3.5 px-4 font-semibold text-gray-600">Edad</th>
-                  <th className="text-left py-3.5 px-4 font-semibold text-gray-600">Estado</th>
-                    <th className="text-left py-3.5 px-4 font-semibold text-gray-600">Contactado</th>
-                  <th className="text-left py-3.5 px-4 font-semibold text-gray-600">
-                    <span className="inline-flex items-center gap-1.5">{Icons.calendar} Fecha</span>
-                  </th>
-                  <th className="text-right py-3.5 px-4 font-semibold text-gray-600">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {candidates.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
-                  >
-                    <td className="py-3 px-4 font-medium text-gray-900">{c.nombre}</td>
-                    <td className="py-3 px-4 text-gray-600">{c.ciudad}</td>
-                    <td className="py-3 px-4 text-gray-600">
-                      {[c.prefijoTelefono, c.telefono].filter(Boolean).join(" ") || "—"}
-                    </td>
-                    <td className="py-3 px-4 text-gray-600">{paisLabel(c.paisUE)}</td>
-                    <td className="py-3 px-4 text-gray-600">{c.edad}</td>
-                    <td className="py-3 px-4">{statusBadge(c.estado)}</td>
-                    <td className="py-3 px-4">
-                      {c.contactado ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-600">
-                          {Icons.check}
-                          Sí
-                        </span>
-                      ) : (
-                        <span className="text-gray-400">No</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-gray-500">{formatDate(c.createdAt)}</td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        <Link
-                          href={`/admin/candidatos/${c.id}`}
-                          className="inline-flex items-center gap-1.5 text-trabexia-primary hover:underline font-medium"
-                        >
-                          {Icons.eye}
-                          Ver
-                        </Link>
-                        <span className="text-gray-200">|</span>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(c)}
-                          disabled={deletingId === c.id}
-                          className="inline-flex items-center gap-1.5 text-red-600 hover:underline text-sm disabled:opacity-50"
-                        >
-                          {Icons.trash}
-                          {deletingId === c.id ? "Borrando..." : "Borrar"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="p-3 sm:p-4 lg:p-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+              {filteredCandidates.map((c) => (
+                <CandidateCard
+                  key={c.id}
+                  candidate={c}
+                  isUpdating={updatingId === c.id}
+                  isDeleting={deletingId === c.id}
+                  onToggleContactado={(candidate) =>
+                    handleQuickUpdate(candidate, { contactado: !candidate.contactado })
+                  }
+                  onToggleArchivado={(candidate) =>
+                    handleQuickUpdate(candidate, { archivado: !candidate.archivado })
+                  }
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
