@@ -18,11 +18,11 @@ import {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="public-page min-h-screen flex flex-col bg-slate-950">
       <Header />
       <main className="flex-1">
         {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-trabexia-primary via-slate-900 to-trabexia-secondary text-white py-20 sm:py-24 px-4">
+        <section className="public-static-dark relative overflow-hidden bg-gradient-to-br from-trabexia-primary via-slate-900 to-trabexia-secondary px-4 py-20 text-white sm:py-24">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -top-32 -left-24 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
             <div className="absolute -bottom-40 right-0 h-96 w-96 rounded-full bg-emerald-400/10 blur-3xl" />
@@ -122,7 +122,7 @@ export default function HomePage() {
         {/* Empresas colaboradoras */}
         <section className="bg-slate-950 px-4 pb-12 sm:pb-16">
           <div className="max-w-6xl mx-auto">
-            <div className="rounded-3xl border border-slate-800 bg-gradient-to-r from-slate-900/80 via-slate-900/60 to-slate-900/80 px-6 py-8 sm:px-10 sm:py-10 shadow-[0_18px_60px_-30px_rgba(15,23,42,1)] backdrop-blur-xl">
+            <div className="public-static-dark rounded-3xl border border-slate-800 bg-gradient-to-r from-slate-900/80 via-slate-900/60 to-slate-900/80 px-6 py-8 shadow-[0_18px_60px_-30px_rgba(15,23,42,1)] backdrop-blur-xl sm:px-10 sm:py-10">
               <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8 justify-between">
                 <div className="space-y-3 max-w-xl">
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-400">
@@ -359,7 +359,7 @@ export default function HomePage() {
 
         {/* CTA final */}
         <section className="bg-slate-950 px-4 pb-16 sm:pb-20">
-          <div className="max-w-4xl mx-auto rounded-3xl border border-slate-800 bg-gradient-to-r from-trabexia-primary to-trabexia-secondary px-6 py-8 sm:px-10 sm:py-10 shadow-[0_18px_60px_-30px_rgba(15,23,42,1)]">
+          <div className="public-static-dark max-w-4xl mx-auto rounded-3xl border border-slate-800 bg-gradient-to-r from-trabexia-primary to-trabexia-secondary px-6 py-8 shadow-[0_18px_60px_-30px_rgba(15,23,42,1)] sm:px-10 sm:py-10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-black/15 text-cyan-300">

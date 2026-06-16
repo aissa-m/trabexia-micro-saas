@@ -295,7 +295,7 @@ export default function AdminCandidateDetailPage() {
   const phone = [candidate.prefijoTelefono, candidate.telefono].filter(Boolean).join(" ") || "—";
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="admin-page space-y-4 sm:space-y-6">
       <div className="flex items-center gap-4">
         <Link
           href="/admin"

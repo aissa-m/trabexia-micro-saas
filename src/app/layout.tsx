@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ThemeScript } from "@/components/ThemeScript";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   description: "Trabaja como conductor. Candidaturas para Trabexia.",
   icons: {
     icon: [
-      { url: "/img/logo.png", type: "image/png" },
+      { url: "/img/logo.svg", type: "image/png" },
       { url: "/img/favicon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/img/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
@@ -41,8 +42,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={inter.variable}>
-      <body className="min-h-screen font-sans antialiased">{children}</body>
+    <html lang="es" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="min-h-screen font-sans antialiased transition-colors duration-300">
+        {children}
+      </body>
     </html>
   );
 }

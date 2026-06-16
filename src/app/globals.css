@@ -9,20 +9,155 @@
 }
 
 body {
-  @apply bg-gray-50 text-gray-900 antialiased;
+  @apply bg-slate-50 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm;
+    @apply bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm shadow-brand/15;
   }
   .btn-accent {
-    @apply bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm;
+    @apply bg-brand hover:bg-brand-dark text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm shadow-brand/15;
   }
   .input-field {
-    @apply w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition bg-white;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500;
   }
   .card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden;
+    @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20;
   }
+  .surface-card {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20;
+  }
+  .surface-card-soft {
+    @apply rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur transition-colors dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-black/20;
+  }
+  .public-section {
+    @apply bg-slate-100 dark:bg-slate-950;
+  }
+  .public-card {
+    @apply rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-sm transition-colors dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100;
+  }
+  .public-frame {
+    @apply rounded-3xl border border-slate-200 bg-white/90 shadow-[0_18px_60px_-30px_rgba(15,23,42,0.18)] backdrop-blur-xl transition-colors dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-[0_18px_60px_-30px_rgba(15,23,42,1)];
+  }
+  .public-chip {
+    @apply rounded-2xl border border-slate-200 bg-white/90 text-slate-700 transition-colors dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-100;
+  }
+  .public-muted {
+    @apply text-slate-600 dark:text-slate-300;
+  }
+  .public-soft {
+    @apply text-slate-500 dark:text-slate-400;
+  }
+}
+
+html:not(.dark) .public-page .bg-slate-950 {
+  background-color: rgb(241 245 249) !important;
+}
+
+html:not(.dark) .public-page .bg-slate-900 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+html:not(.dark) .public-page .bg-slate-900\/60,
+html:not(.dark) .public-page .bg-slate-900\/70,
+html:not(.dark) .public-page .bg-slate-900\/80 {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+html:not(.dark) .public-page .border-slate-700,
+html:not(.dark) .public-page .border-slate-800,
+html:not(.dark) .public-page .border-slate-700\/70,
+html:not(.dark) .public-page .border-slate-700\/80 {
+  border-color: rgb(203 213 225) !important;
+}
+
+html:not(.dark) .public-page .text-white {
+  color: rgb(15 23 42) !important;
+}
+
+html:not(.dark) .public-page .btn-primary,
+html:not(.dark) .public-page .btn-accent,
+html:not(.dark) .public-page .bg-brand,
+html:not(.dark) .public-page .bg-brand-dark {
+  color: rgb(255 255 255) !important;
+}
+
+html:not(.dark) .public-page .text-slate-100,
+html:not(.dark) .public-page .text-slate-100\/80,
+html:not(.dark) .public-page .text-slate-100\/90,
+html:not(.dark) .public-page .text-slate-200 {
+  color: rgb(30 41 59) !important;
+}
+
+html:not(.dark) .public-page .text-slate-300 {
+  color: rgb(71 85 105) !important;
+}
+
+html:not(.dark) .public-page .text-slate-400 {
+  color: rgb(100 116 139) !important;
+}
+
+html:not(.dark) .public-page .text-cyan-200,
+html:not(.dark) .public-page .text-cyan-300,
+html:not(.dark) .public-page .text-cyan-400 {
+  color: rgb(8 145 178) !important;
+}
+
+html:not(.dark) .public-page .text-emerald-200 {
+  color: rgb(5 150 105) !important;
+}
+
+html:not(.dark) .public-page .text-amber-200 {
+  color: rgb(217 119 6) !important;
+}
+
+html:not(.dark) .public-page .public-static-dark .text-white {
+  color: rgb(255 255 255) !important;
+}
+
+html:not(.dark) .public-page .public-static-dark .text-slate-100,
+html:not(.dark) .public-page .public-static-dark .text-slate-100\/80,
+html:not(.dark) .public-page .public-static-dark .text-slate-100\/90 {
+  color: rgb(241 245 249) !important;
+}
+
+html:not(.dark) .public-page .public-static-dark .text-slate-300,
+html:not(.dark) .public-page .public-static-dark .text-slate-400 {
+  color: rgb(203 213 225) !important;
+}
+
+.dark .admin-page .bg-white {
+  background-color: rgb(15 23 42 / 0.88) !important;
+}
+
+.dark .admin-page .bg-gray-50 {
+  background-color: rgb(15 23 42 / 0.72) !important;
+}
+
+.dark .admin-page .border-gray-200,
+.dark .admin-page .border-gray-100 {
+  border-color: rgb(51 65 85) !important;
+}
+
+.dark .admin-page .text-gray-900 {
+  color: rgb(248 250 252) !important;
+}
+
+.dark .admin-page .text-gray-700 {
+  color: rgb(226 232 240) !important;
+}
+
+.dark .admin-page .text-gray-600 {
+  color: rgb(203 213 225) !important;
+}
+
+.dark .admin-page .text-gray-500,
+.dark .admin-page .text-gray-400,
+.dark .admin-page .text-gray-300 {
+  color: rgb(148 163 184) !important;
+}
+
+.dark .admin-page .hover\:bg-gray-50:hover {
+  background-color: rgb(30 41 59) !important;
 }

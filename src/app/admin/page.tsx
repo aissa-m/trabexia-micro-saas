@@ -4,11 +4,19 @@ import { useState, useEffect, useMemo } from "react";
 import type { Candidate, CandidateStatus } from "@/types/candidate";
 import { CandidateCard } from "@/components/admin/CandidateCard";
 
-const ESTADOS: { value: CandidateStatus | ""; label: string }[] = [
+type CandidateFilterValue =
+  | CandidateStatus
+  | "CONTACTADO"
+  | "NO_CONTACTADO"
+  | "";
+
+const ESTADOS: { value: CandidateFilterValue; label: string }[] = [
   { value: "", label: "Todos" },
   { value: "APTO", label: "Apto" },
   { value: "DESCARTADO", label: "Descartado" },
   { value: "DUDA", label: "Duda" },
+  { value: "CONTACTADO", label: "Contactado" },
+  { value: "NO_CONTACTADO", label: "No contactado" },
 ];
 
 const Icons = {
@@ -114,7 +122,7 @@ export default function AdminPanelPage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filterEstado, setFilterEstado] = useState<CandidateStatus | "">("");
+  const [filterEstado, setFilterEstado] = useState<CandidateFilterValue>("");
   const [filterArchivado, setFilterArchivado] = useState<"all" | "true" | "false">("false");
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -150,7 +158,13 @@ export default function AdminPanelPage() {
 
     return candidates
       .filter((candidate) => {
-        const matchesEstado = !filterEstado || candidate.estado === filterEstado;
+        const matchesEstado =
+          !filterEstado ||
+          (filterEstado === "CONTACTADO"
+            ? candidate.contactado
+            : filterEstado === "NO_CONTACTADO"
+              ? !candidate.contactado
+              : candidate.estado === filterEstado);
 
         const matchesArchivado =
           filterArchivado === "all" ||
@@ -257,7 +271,7 @@ export default function AdminPanelPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="admin-page space-y-6">
       {/* Título */}
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="text-2xl font-bold text-gray-900">Panel de candidatos</h1>
@@ -299,12 +313,12 @@ export default function AdminPanelPage() {
           <div>
             <label className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-gray-500 mb-1.5">
               {Icons.filter}
-              Estado
+              Estado / contacto
             </label>
             <select
               value={filterEstado}
-              onChange={(e) => setFilterEstado(e.target.value as CandidateStatus | "")}
-              className="input-field w-auto min-w-[140px]"
+              onChange={(e) => setFilterEstado(e.target.value as CandidateFilterValue)}
+              className="input-field w-auto min-w-[180px]"
             >
               {ESTADOS.map((e) => (
                 <option key={e.value || "all"} value={e.value}>

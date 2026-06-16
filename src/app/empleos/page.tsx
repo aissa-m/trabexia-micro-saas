@@ -25,7 +25,7 @@ export default function EmpleosPage() {
   const lastUpdate = "Última actualización hace 1h";
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950">
+    <div className="public-page min-h-screen flex flex-col bg-slate-950">
       <Header />
       <main className="flex-1 max-w-6xl mx-auto px-4 py-16 sm:py-20">
         {/* Hero */}
@@ -369,7 +369,7 @@ export default function EmpleosPage() {
 
         {/* CTA final */}
         <section className="mt-12 sm:mt-16">
-          <div className="rounded-3xl border border-slate-800 bg-gradient-to-r from-trabexia-primary to-trabexia-secondary px-6 py-8 sm:px-10 sm:py-10 shadow-[0_18px_60px_-30px_rgba(15,23,42,1)]">
+          <div className="public-static-dark rounded-3xl border border-slate-800 bg-gradient-to-r from-trabexia-primary to-trabexia-secondary px-6 py-8 shadow-[0_18px_60px_-30px_rgba(15,23,42,1)] sm:px-10 sm:py-10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="space-y-1 text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl font-semibold text-white">

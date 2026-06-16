@@ -1,39 +1,65 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Icons = {
   shield: (
-    <svg className="w-10 h-10 text-trabexia-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    <svg className="h-10 w-10 text-trabexia-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+      />
     </svg>
   ),
   user: (
-    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      />
     </svg>
   ),
   lock: (
-    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+      />
     </svg>
   ),
   arrowRight: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
     </svg>
   ),
   home: (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+      />
     </svg>
   ),
   alert: (
-    <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg className="h-5 w-5 flex-shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   ),
 };
@@ -85,54 +111,56 @@ export default function AdminLoginPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="w-10 h-10 border-2 border-trabexia-primary border-t rounded-full animate-spin" />
-        <p className="mt-4 text-gray-500">Comprobando sesión...</p>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-white dark:from-slate-950 dark:to-slate-900">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-trabexia-primary border-t-transparent" />
+        <p className="mt-4 text-slate-500 dark:text-slate-400">Comprobando sesión...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-12">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-100 px-4 py-12 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="mx-auto w-full max-w-md">
+        <div className="mb-6 flex justify-end">
+          <ThemeToggle />
+        </div>
+
+        <div className="mb-8 flex justify-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-trabexia-primary rounded-lg px-3 py-2"
+            className="inline-flex items-center gap-3 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-trabexia-primary"
           >
             <Image
-              src="/img/logo.png"
+              src="/img/logo.svg"
               alt="Trabexia"
               width={56}
               height={56}
               className="h-12 w-auto"
             />
-            <span className="text-3xl font-semibold tracking-tight text-gray-900">
+            <span className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               Trabexia
             </span>
           </Link>
         </div>
 
-        {/* Card */}
-        <div className="rounded-2xl bg-white border border-gray-200 shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-trabexia-primary/5 to-transparent px-6 sm:px-8 pt-6 pb-4 border-b border-gray-100">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900">
+          <div className="border-b border-slate-200 bg-gradient-to-r from-trabexia-primary/10 to-transparent px-6 pb-4 pt-6 dark:border-slate-800 dark:from-trabexia-primary/20">
             <div className="flex items-center gap-3">
               <span className="flex-shrink-0">{Icons.shield}</span>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   Panel de administración
                 </h1>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
                   Introduce tus credenciales para acceder
                 </p>
               </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5 p-6 sm:p-8">
             {error && (
-              <div className="rounded-xl bg-red-50 text-red-800 px-4 py-3 border border-red-100 flex items-start gap-3">
+              <div className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200">
                 {Icons.alert}
                 <p className="text-sm">{error}</p>
               </div>
@@ -141,7 +169,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="user"
-                className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-gray-500 mb-1.5"
+                className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400"
               >
                 {Icons.user}
                 Usuario
@@ -161,7 +189,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-gray-500 mb-1.5"
+                className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400"
               >
                 {Icons.lock}
                 Contraseña
@@ -181,11 +209,11 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 btn-primary disabled:opacity-60 py-3"
+              className="btn-primary inline-flex w-full items-center justify-center gap-2 py-3 disabled:opacity-60"
             >
               {loading ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white border-t transparent rounded-full animate-spin" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   Entrando...
                 </>
               ) : (
@@ -198,10 +226,10 @@ export default function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="text-center mt-6">
+        <p className="mt-6 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-trabexia-primary font-medium transition"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-trabexia-primary dark:text-slate-400 dark:hover:text-white"
           >
             {Icons.home}
             Volver al inicio

@@ -12,7 +12,7 @@ export function WhatsAppContactButton({
   if (!href) {
     return (
       <div
-        className={`inline-flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-500 ${unavailableClassName}`.trim()}
+        className={`inline-flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 ${unavailableClassName}`.trim()}
       >
         Teléfono no disponible
       </div>
@@ -24,7 +24,7 @@ export function WhatsAppContactButton({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 ${className}`.trim()}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/70 ${className}`.trim()}
     >
       Contactar por WhatsApp
     </Link>

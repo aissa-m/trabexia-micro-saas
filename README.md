@@ -86,12 +86,12 @@ Edita `.env.local`:
 Los componentes usan:
 
 - `/img/logo_nombre_sin_fondo.png` (cabecera)
-- `/img/logo.png` (landing)
+- `/img/logo.svg` (landing)
 
 En Next.js las rutas estáticas están en `public/`. Copia el contenido de tu carpeta `img/` (en la raíz del proyecto) a `public/img/`:
 
 - `public/img/logo_nombre_sin_fondo.png`
-- `public/img/logo.png`
+- `public/img/logo.svg`
 
 ### 5. Arrancar en local
 
